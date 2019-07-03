@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <style>
+        .el-header, .el-footer {
+          background-color: #B3C0D1;
+          color: #333;
+          text-align: center;
+          line-height: 60px;
+        }
+        
+        .el-aside {
+          background-color: #D3DCE6;
+          color: #333;
+          text-align: center;
+          line-height: 200px;
+        }
+        
+        .el-main {
+          background-color: #E9EEF3;
+          color: #333;
+          text-align: center;
+          line-height: 160px;
+        }
+        
+        body > .el-container {
+          margin-bottom: 40px;
+        }
+        
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+          line-height: 260px;
+        }
+        
+        .el-container:nth-child(7) .el-aside {
+          line-height: 320px;
+        }
+      </style>
+</head>
+<body>
+  <div id="app">
+        <el-container>
+                <el-header>Header</el-header>
+                <el-main>
+                        <el-upload
+                            action="{:url('ocr/generalocr')}"
+                            list-type="picture-card"
+                            :on-preview="handlePictureCardPreview"
+                            :on-remove="handleRemove">
+                            <i class="el-icon-plus"></i>
+                        </el-upload>
+                        <el-dialog :visible.sync="dialogVisible">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                        </el-dialog>
+                </el-main>
+        </el-container>
+    
+  </div>
+ 
+</body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        return { 
+            dialogImageUrl: '',
+        dialogVisible: false
+        }
+      },
+      methods: {
+        handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+      }
+    }
+    })
+  </script>
+</html>
