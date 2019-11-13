@@ -4,7 +4,7 @@ namespace app\tbkapi\controller;
 use think\Controller;
 use think\facade\Cache;
 use think\facade\Request;
-use think\Db;
+
 class Index extends Controller
 {
     protected $appkey = '27697571';
@@ -15,7 +15,7 @@ class Index extends Controller
     }
     public function index()
     {
-        // include_once EXTEND_PATH . '/taobaoke/TopClient.php';
+        include_once EXTEND_PATH . '/taobaoke/TopClient.php';
         return 'tbkapi';
     }
     public function demo()
@@ -45,7 +45,7 @@ class Index extends Controller
         $c->appkey = $this->appkey;
         $c->secretKey = $this->secret;
         $req = new \TbkDgMaterialOptionalRequest;
-
+       
         $req->setAdzoneId("72200643");
         // $req->setStartDsr("10");
         // $req->setPageSize("20");
@@ -126,20 +126,32 @@ class Index extends Controller
     }
     public function auth()
     {
-        $url = 'https://oauth.taobao.com/authorize?';
+        $url = 'https://oauth.taobao.com/authorize';
         $postfields = array('response_type' => 'code',
             'client_id' => '27697571',
-            'redirect_uri' => 'http://pdd.0512688.com/tbkapi/index/callback',
-            'view' => 'wap'
-        );
+            'client_secret' => '2a41dfd60d1f8ae345a05fc577009b16',
+            // 'code' => 'test',
+            'redirect_uri' => 'http://pdd.0512688.com/tbkapi/index/callback');
         $post_data = '';
 
         foreach ($postfields as $key => $value) {
-            $post_data .= "$key=" . urlencode($value) . "&";
-        }
-        // echo $post_data = substr($post_data, 0, -1);
-        // echo $url . $post_data;
-        header("location:".$url . $post_data);
+            $post_data .= "$key=" . urlencode($value) . "&";}
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+        //指定post数据
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        //添加变量
+        curl_setopt($ch, CURLOPT_POSTFIELDS, substr($post_data, 0, -1));
+        $output = curl_exec($ch);
+        $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        // echo $httpStatusCode;
+        curl_close($ch);
+        // var_dump($output);
     }
     public function callback()
     {
@@ -173,17 +185,7 @@ class Index extends Controller
         // var_dump($output);
         Cache::set('refresh_token', $output['refresh_token'], $output['re_expires_in']);
         Cache::set('access_token', $output['refresh_token'], $output['expires_in']);
-
-        $data['refresh_token'] = $output['refresh_token'];
-        $data['re_expires_in'] = $output['re_expires_in'];
-
-        $data['access_token'] = $output['access_token'];
-        $data['expires_in'] = $output['expires_in'];
-        $data['taobao_user_nick'] = $output['taobao_user_nick'];
-        $data['taobao_user_id'] = $output['taobao_user_id'];
-        $res = Db::name('users')->insert($data);
-        if($res){
-           return '授权成功';
-        }
+        return Cache::get('access_token');
+        // return $code;
     }
 }

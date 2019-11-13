@@ -15,9 +15,9 @@ return [
     // 服务器地址
     'hostname'        => 'localhost',
     // 数据库名
-    'database'        => 'pdd_0512688_com',
+    'database'        => 'pdd.0512688.com',
     // 用户名
-    'username'        => 'pdd_0512688_com',
+    'username'        => 'pdd.0512688.com',
     // 密码
     'password'        => 'tFtaDn5SHThCJSTi',
     // 端口
